@@ -1,0 +1,5 @@
+# Drop recorded audio clips here, organized by folder:
+#   public/audio/sounds/   letter sounds + family rimes (e.g. onset-c.mp3, rime-at.mp3)
+#   public/audio/letters/  letter names for spelling (e.g. a.mp3)
+#   public/audio/words/    whole words (e.g. cat.mp3)
+# Run `npm run audio:list` for the exact file list, then `npm run audio:manifest`.
