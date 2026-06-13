@@ -2,8 +2,11 @@ import { C, cardStyle, ring, h2Style } from "../../theme.js";
 import Pill from "../Pill.jsx";
 import FamilyWord from "../FamilyWord.jsx";
 import { Mat, Pat, Dan } from "../characters.jsx";
+import { VOWEL_INFO, vowelOf } from "../../lib/phonics.js";
 
 export default function WordsTab({ lesson, speech }) {
+  const v = vowelOf(lesson.family);
+  const info = VOWEL_INFO[v] ?? { sound: v, word: lesson.family, emoji: "" };
   return (
     <section>
       <div
@@ -18,15 +21,15 @@ export default function WordsTab({ lesson, speech }) {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 42, fontWeight: 700 }}>
-            <span style={{ color: C.blue }}>A</span>
-            <span style={{ color: C.red }}>a</span>
+            <span style={{ color: C.blue }}>{v.toUpperCase()}</span>
+            <span style={{ color: C.red }}>{v}</span>
           </span>
           <div style={{ textAlign: "left" }}>
             <div style={{ fontWeight: 700, fontSize: 16 }}>
-              Short A says “a” 🍎
+              Short {v.toUpperCase()} says “{info.sound}” {info.emoji}
             </div>
             <div style={{ fontSize: 13, color: C.gray }}>
-              like in apple and {lesson.family}
+              like in {info.word} and {lesson.family}
             </div>
           </div>
         </div>
