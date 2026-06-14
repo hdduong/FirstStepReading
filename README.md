@@ -1,6 +1,6 @@
 # FirstStepReading
 
-FirstStepReading is a free, ad-free interactive companion app that helps kids practice letter sounds, word families, and early reading skills alongside the FirstStepReading books and videos.
+FirstStepReading is a free, ad-free interactive companion app that helps kids practice letter sounds, word families, and early reading skills alongside the FirstStepReading.com books and videos.
 
 The app gives young learners another way to connect letters with sounds. Kids can tap words to hear them, practice short-vowel word families, listen to sentences, and build confidence through simple touch-based activities.
 
@@ -11,6 +11,8 @@ The app gives young learners another way to connect letters with sounds. Kids ca
 - Sight words from the reading pages
 - Listening, tapping, and reading simple sentences
 - Matching spoken words in a playful practice game
+
+_For now, kids can practice with all of Book 1 (ABC's and Short Vowels); Books 2 and 3 are coming soon._
 
 ## Companion To Books And Videos
 
