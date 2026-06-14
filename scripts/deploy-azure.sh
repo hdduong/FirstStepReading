@@ -44,12 +44,43 @@ create_package() {
   elif command -v pwsh >/dev/null 2>&1; then
     powershell_cmd="pwsh"
   else
-    echo "PowerShell is required for packaging with Compress-Archive." >&2
+    echo "PowerShell is required for packaging the App Service zip." >&2
     exit 1
   fi
 
-  "$powershell_cmd" -NoLogo -NoProfile -Command \
-    "if (Test-Path app.zip) { Remove-Item app.zip }; Compress-Archive -Path dist,server,package.json,package-lock.json,node_modules -DestinationPath app.zip -Force"
+  "$powershell_cmd" -NoLogo -NoProfile -Command '
+$ErrorActionPreference = "Stop"
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$zipPath = Join-Path (Get-Location) "app.zip"
+if (Test-Path -LiteralPath $zipPath) {
+  Remove-Item -LiteralPath $zipPath -Force
+}
+
+$basePath = (Get-Location).Path.TrimEnd([char[]]("\", "/"))
+$packagePaths = @("dist", "server", "package.json", "package-lock.json", "node_modules")
+$compression = [System.IO.Compression.CompressionLevel]::Optimal
+$archive = [System.IO.Compression.ZipFile]::Open($zipPath, [System.IO.Compression.ZipArchiveMode]::Create)
+
+try {
+  foreach ($packagePath in $packagePaths) {
+    if (Test-Path -LiteralPath $packagePath -PathType Container) {
+      Get-ChildItem -LiteralPath $packagePath -Recurse -File | ForEach-Object {
+        $relativePath = $_.FullName.Substring($basePath.Length + 1).Replace("\", "/")
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $_.FullName, $relativePath, $compression) | Out-Null
+      }
+    } elseif (Test-Path -LiteralPath $packagePath -PathType Leaf) {
+      $item = Get-Item -LiteralPath $packagePath
+      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $item.FullName, $item.Name, $compression) | Out-Null
+    } else {
+      throw "Package path not found: $packagePath"
+    }
+  }
+} finally {
+  $archive.Dispose()
+}
+'
 }
 
 trap restore_dev_deps EXIT
