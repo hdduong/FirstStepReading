@@ -37,6 +37,21 @@ restore_dev_deps() {
   fi
 }
 
+create_package() {
+  local powershell_cmd=""
+  if command -v powershell.exe >/dev/null 2>&1; then
+    powershell_cmd="powershell.exe"
+  elif command -v pwsh >/dev/null 2>&1; then
+    powershell_cmd="pwsh"
+  else
+    echo "PowerShell is required for packaging with Compress-Archive." >&2
+    exit 1
+  fi
+
+  "$powershell_cmd" -NoLogo -NoProfile -Command \
+    "if (Test-Path app.zip) { Remove-Item app.zip }; Compress-Archive -Path dist,server,package.json,package-lock.json,node_modules -DestinationPath app.zip -Force"
+}
+
 trap restore_dev_deps EXIT
 
 [ -f infra/main.bicep ] || { echo "Run from the repo root (infra/main.bicep not found)." >&2; exit 1; }
@@ -55,8 +70,7 @@ npm ci
 npm run build
 npm prune --omit=dev
 DEV_DEPS_PRUNED=1
-rm -f app.zip
-zip -r app.zip dist server package.json package-lock.json node_modules >/dev/null
+create_package
 
 echo "==> Deploy"
 az webapp deploy -g "$RESOURCE_GROUP" -n "$APP_NAME" --src-path app.zip --type zip
