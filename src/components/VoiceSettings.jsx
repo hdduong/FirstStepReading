@@ -31,12 +31,9 @@ export default function VoiceSettings({ speech }) {
   const {
     voicePacks,
     voicePackId,
-    voiceList,
-    voiceName,
     speed,
     SPEEDS,
     pickVoicePack,
-    pickVoice,
     changeSpeed,
     testVoice,
   } = speech;
@@ -70,23 +67,6 @@ export default function VoiceSettings({ speech }) {
           Test
         </Pill>
       </div>
-
-      {voiceList.length > 0 && (
-        <div style={rowStyle}>
-          <span style={labelStyle}>Fallback</span>
-          <select
-            value={voiceName}
-            onChange={(e) => pickVoice(e.target.value)}
-            style={selectStyle}
-          >
-            {voiceList.map((v) => (
-              <option key={v.name} value={v.name}>
-                {v.name.split(" - ")[0].replace("Desktop", "").trim()}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       <div style={rowStyle}>
         <span style={labelStyle}>Speed</span>

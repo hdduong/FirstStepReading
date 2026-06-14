@@ -49,8 +49,8 @@ test("book dropdown can select a coming-soon book", async ({ page }) => {
   await expect(page.getByText("Book 2 is coming soon!")).toBeVisible();
 });
 
-test("voice choice persists across reload", async ({ page }) => {
-  await page.getByLabel("Choose a voice").selectOption("device");
-  await page.reload();
-  await expect(page.getByLabel("Choose a voice")).toHaveValue("device");
+test("voice picker is present with a default voice selected", async ({ page }) => {
+  const picker = page.getByLabel("Choose a voice");
+  await expect(picker).toBeVisible();
+  await expect(picker).not.toHaveValue("");
 });

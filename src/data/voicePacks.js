@@ -7,12 +7,6 @@ export const BASE_VOICE_PACKS = [
     provider: "local",
     prefix: "",
   },
-  {
-    id: "device",
-    label: "Device voice (offline)",
-    provider: "browser",
-    prefix: null,
-  },
 ];
 
 export const ELEVENLABS_VOICE_PACKS = [
