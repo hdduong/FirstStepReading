@@ -13,8 +13,8 @@ param location string = resourceGroup().location
 @description('App Service plan SKU. B1 is the default because this app serves bundled MP3/MP4 media and needs custom domain SSL support.')
 param sku string = 'B1'
 
-@description('Node LTS version for the Linux runtime.')
-param nodeVersion string = '20-lts'
+@description('Node LTS version for the Linux runtime. Node 20 reached end-of-life in 2026; 22-lts is the supported successor.')
+param nodeVersion string = '22-lts'
 
 resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: '${appName}-plan'
