@@ -476,7 +476,7 @@ export const VIDEO_CLIPS = {
       "word": "said",
       "disk": "Disk1",
       "path": "Disk1/031_said_005920.mp4",
-      "approxTime": "00:59:20"
+      "approxTime": "00:59:26"
     }
   ],
   "see": [
