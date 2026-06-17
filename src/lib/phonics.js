@@ -25,7 +25,6 @@ export const DIGRAPH_SOUND = {
   th: "thuh", sh: "shuh", ch: "chuh", wh: "wuh", ph: "fuh", ck: "kuh", ng: "ng",
 };
 const DIGRAPHS = Object.keys(DIGRAPH_SOUND);
-const CONNECTED_ONSET_CUES = new Set(["v"]);
 
 // The short vowel a family is built on: "at"/"an" → "a", "et" → "e", "ig" → "i".
 export const vowelOf = (family) => family[0].toLowerCase();
@@ -91,13 +90,6 @@ export const soundOutTokens = (word, family) => {
   const onset = lower.endsWith(family)
     ? lower.slice(0, lower.length - family.length)
     : lower.slice(0, 1);
-  if (CONNECTED_ONSET_CUES.has(onset)) {
-    return [
-      wordToken(word),
-      { say: family, clip: soundKey("rime", family) },
-      whole,
-    ];
-  }
   return [
     ...clusterTokens(onset, "onset"),
     { say: family, clip: soundKey("rime", family) },

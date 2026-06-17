@@ -52,10 +52,6 @@ describe("soundOutTokens", () => {
       "At",
     ]);
   });
-
-  it("uses the whole word instead of a standalone v cue", () => {
-    expect(says(soundOutTokens("Van", "an"))).toEqual(["Van", "an", "Van"]);
-  });
 });
 
 describe("spellTokens", () => {
