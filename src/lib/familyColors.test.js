@@ -3,9 +3,13 @@ import { C } from "../theme.js";
 import { familyForWord, familyRimeColor } from "./familyColors.js";
 
 describe("family colors", () => {
-  it("keeps -an and -at visually distinct", () => {
+  it("keeps -an and normal -at rimes in their original color", () => {
     expect(familyRimeColor("an")).toBe(C.red);
-    expect(familyRimeColor("at")).toBe(C.green);
+    expect(familyRimeColor("at", "at")).toBe(C.red);
+  });
+
+  it("uses green for -at only when it appears inside the -an lesson", () => {
+    expect(familyRimeColor("at", "an")).toBe(C.green);
   });
 
   it("falls back to -at when a word appears inside the -an lesson", () => {

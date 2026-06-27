@@ -20,7 +20,7 @@ export default function FamilyWord({ word, family, size = 30 }) {
     <span style={{ fontSize: size, fontWeight: 700, letterSpacing: 1 }}>
       {lead && <span style={{ color: C.blueDark }}>{lead}</span>}
       <span style={{ color: hit ? C.blue : C.blueDark }}>{onset}</span>
-      {hit && <span style={{ color: familyRimeColor(displayFamily) }}>{rime}</span>}
+      {hit && <span style={{ color: familyRimeColor(displayFamily, family) }}>{rime}</span>}
       {tail && <span style={{ color: C.blueDark }}>{tail}</span>}
     </span>
   );
