@@ -83,6 +83,9 @@ jobs:
             npx --no-install cap sync ios
           fi
 
+      - name: Install iOS app icon
+        run: node scripts/install-ios-app-icon.mjs
+
       - name: Write App Store Connect API key
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}

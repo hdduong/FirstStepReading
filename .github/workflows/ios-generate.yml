@@ -30,6 +30,8 @@ jobs:
             npx --no-install cap add ios
             npx --no-install cap sync ios
           fi
+      - name: Install iOS app icon
+        run: node scripts/install-ios-app-icon.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: capacitor-ios-project

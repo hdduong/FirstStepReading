@@ -36,8 +36,9 @@ The workflow:
 1. Installs npm dependencies.
 2. Builds the Vite app.
 3. Generates or syncs the Capacitor iOS project.
-4. Signs and archives the iOS app using automatic signing.
-5. Uploads the `.ipa` as a short-lived GitHub artifact.
-6. Uploads the `.ipa` to TestFlight.
+4. Installs the FirstStepReading app icon into the generated iOS project.
+5. Signs and archives the iOS app using automatic signing.
+6. Uploads the `.ipa` as a short-lived GitHub artifact.
+7. Uploads the `.ipa` to TestFlight.
 
 The workflow is manual only, so merging code to `main` will not upload a new iOS build by itself.
