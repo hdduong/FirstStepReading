@@ -11,4 +11,8 @@ describe("family colors", () => {
   it("falls back to -at when a word appears inside the -an lesson", () => {
     expect(familyForWord("rat", "an")).toBe("at");
   });
+
+  it("does not fall back to -at outside the explicit -an/-at color lessons", () => {
+    expect(familyForWord("Mat", "am")).toBeUndefined();
+  });
 });

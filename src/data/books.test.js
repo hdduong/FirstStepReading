@@ -70,7 +70,7 @@ describe.each(playable)("$id — $theme", (book) => {
 });
 
 describe("Book 1 text fixes", () => {
-  it("uses singular Rat on the -an story page 10", () => {
+  it("uses singular rat on the -an story page 10", () => {
     const book1 = BOOKS.find((b) => b.id === "book1");
     const anLesson = book1.lessons.find((l) => l.id === "an");
     const page10 = anLesson.sentences.find((s) => s.page === 10);
