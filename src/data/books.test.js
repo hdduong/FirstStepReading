@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { BOOKS } from "./index.js";
 import { vowelOf, cleanWord } from "../lib/phonics.js";
+import { familyForWord } from "../lib/familyColors.js";
 
 // Content invariants: these guard the lesson data as Books 2 & 3 get filled in,
 // catching transcription mistakes (a word that doesn't match its family, a
@@ -85,5 +86,14 @@ describe("Book 1 text fixes", () => {
       "“Not",
       "rat!”",
     ]);
+  });
+
+  it("uses Dad on the Dad's Bag page 18 so -ad colors correctly", () => {
+    const book1 = BOOKS.find((b) => b.id === "book1");
+    const dadsBagLesson = book1.lessons.find((l) => l.id === "dadsbag");
+    const page18 = dadsBagLesson.sentences.find((s) => s.page === 18);
+
+    expect(page18.words).toEqual(["Mat", "has", "Dad", "bag.", "Mat", "wags."]);
+    expect(familyForWord("Dad", dadsBagLesson.family)).toBe("ad");
   });
 });

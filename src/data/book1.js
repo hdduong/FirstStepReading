@@ -150,7 +150,7 @@ export default {
         {
           page: 18,
           pic: "🛍️",
-          words: ["Mat", "has", "Dad's", "bag.", "Mat", "wags."],
+          words: ["Mat", "has", "Dad", "bag.", "Mat", "wags."],
         },
         { page: 19, pic: "😡", words: ["Mat", "is", "bad.", "Dad", "is", "mad."] },
         {
