@@ -68,3 +68,22 @@ describe.each(playable)("$id — $theme", (book) => {
     expect(new Set(pages).size).toBe(pages.length);
   });
 });
+
+describe("Book 1 text fixes", () => {
+  it("uses singular Rat on the -an story page 10", () => {
+    const book1 = BOOKS.find((b) => b.id === "book1");
+    const anLesson = book1.lessons.find((l) => l.id === "an");
+    const page10 = anLesson.sentences.find((s) => s.page === 10);
+
+    expect(page10.words).toEqual([
+      "Dan",
+      "has",
+      "a",
+      "pan.",
+      "Dan",
+      "said,",
+      "“Not",
+      "rat!”",
+    ]);
+  });
+});
