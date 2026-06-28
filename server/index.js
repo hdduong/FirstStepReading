@@ -66,6 +66,7 @@ app.set("trust proxy", 1);
 
 // ---- API routes ----
 app.get("/api/health", (req, res) => {
+  res.set("Cache-Control", "no-store");
   res.json({ status: "ok", tts: TTS_ENABLED });
 });
 

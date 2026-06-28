@@ -12,6 +12,11 @@ export const SPEEDS = [
   ["Normal", 1],
 ];
 
+// Mirrors the server's TTS_MAX_LEN. Longer text would be truncated by /api/tts
+// (and play back incomplete), so the client skips the proxy and uses the device
+// voice for anything over the cap.
+const TTS_MAX_CHARS = 200;
+
 const wordWeight = (word) =>
   Math.max(1, String(word).replace(/[^A-Za-z0-9]+/g, "").length);
 
@@ -200,7 +205,7 @@ export function useSpeech() {
   // Fallback for a token with no recorded clip: try the Google TTS proxy (when
   // available), then the device voice. `done` already guards against a stale run.
   const speakFallback = (text, rate, opts, done) => {
-    if (ttsRef.current.enabled && text) {
+    if (ttsRef.current.enabled && text && text.length <= TTS_MAX_CHARS) {
       const a = new Audio(ttsUrl(text, voicePackRef.current));
       a.playbackRate = Math.max(0.5, Math.min(1.2, speedRef.current));
       audioRef.current = a;
@@ -300,7 +305,8 @@ export function useSpeech() {
     // Google TTS proxy (with progress highlighting) before the device voice.
     const fallback = () => {
       if (run !== runRef.current) return;
-      if (!ttsRef.current.enabled || !phrase?.say) return deviceFallback();
+      if (!ttsRef.current.enabled || !phrase?.say || phrase.say.length > TTS_MAX_CHARS)
+        return deviceFallback();
       const a = new Audio(ttsUrl(phrase.say, voicePackRef.current));
       audioRef.current = a;
       a.playbackRate = clipRate;
@@ -314,6 +320,7 @@ export function useSpeech() {
       const toDevice = () => {
         if (fellBack) return; // error + rejected play() can both fire
         fellBack = true;
+        audioRef.current = null; // drop the dead TTS element before the device voice
         deviceFallback();
       };
       a.onended = () => {
