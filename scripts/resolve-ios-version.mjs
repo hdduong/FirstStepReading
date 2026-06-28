@@ -33,13 +33,12 @@ if (process.env.GITHUB_ENV) {
 if (process.env.GITHUB_STEP_SUMMARY) {
   appendFileSync(
     process.env.GITHUB_STEP_SUMMARY,
-    [
+    `${[
       '## iOS App Store version',
       '',
       `- Version: \`${marketingVersion}\``,
       `- Build: \`${buildNumber}\``,
-      '',
-    ].join('\n'),
+    ].join('\n')}\n`,
   )
 }
 

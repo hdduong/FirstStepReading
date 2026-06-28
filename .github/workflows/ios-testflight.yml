@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       marketing_version:
-        description: Optional App Store version. Leave blank to use package.json version.
+        description: Optional App Store version in x.y.z numeric format. Leave blank to use package.json version.
         required: false
         type: string
       build_number:
-        description: Optional iOS build number. Leave blank to use GitHub run number.
+        description: Optional iOS build number with 1-3 numeric parts. Leave blank to use GitHub run number and run attempt.
         required: false
         type: string
 

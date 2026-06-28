@@ -36,6 +36,8 @@ The App Store version is automated from `package.json`:
 - `package.json` `version` becomes the iOS marketing version shown in App Store Connect.
 - Each workflow run gets a unique iOS build number from GitHub's run number and run attempt.
 - The manual workflow form also has optional `marketing_version` and `build_number` fields when you need a one-time override.
+- `marketing_version` must use `x.y.z` numeric format, such as `1.0.0`.
+- `build_number` must use one to three numeric parts, such as `42`, `42.1`, or `42.1.2`.
 
 The workflow:
 
