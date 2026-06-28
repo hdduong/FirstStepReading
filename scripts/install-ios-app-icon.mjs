@@ -149,9 +149,7 @@ function installImage(image) {
 
 mkdirSync(appIconSet, { recursive: true })
 
-for (const image of appIconImages) {
-  installImage(image)
-}
+appIconImages.forEach(installImage)
 
 writeFileSync(
   contentsPath,
