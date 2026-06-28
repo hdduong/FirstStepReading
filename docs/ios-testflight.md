@@ -45,9 +45,12 @@ The workflow:
 2. Resolves the App Store version and build number.
 3. Builds the Vite app.
 4. Generates or syncs the Capacitor iOS project.
-5. Installs the FirstStepReading app icon into the generated iOS project.
+5. Installs the FirstStepReading app icon catalog into the generated iOS project.
 6. Signs and archives the iOS app using automatic signing.
 7. Uploads the `.ipa` as a short-lived GitHub artifact.
 8. Uploads the `.ipa` to TestFlight.
+
+The icon installer uses `assets/app-icon-1024.png` as the source image and generates the
+required iPhone, iPad, iPad Pro, and App Store marketing icon sizes on the macOS runner.
 
 The workflow is manual only, so merging code to `main` will not upload a new iOS build by itself.
