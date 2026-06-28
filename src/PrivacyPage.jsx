@@ -76,8 +76,6 @@ export default function PrivacyPage() {
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; }
-        body { margin: 0; }
         a:focus-visible { outline: 3px solid ${C.blue}; outline-offset: 3px; }
       `}</style>
 
