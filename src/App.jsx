@@ -258,6 +258,13 @@ export default function App() {
         </a>
         {" • "}
         <a
+          href="/copyright"
+          style={{ color: C.blue, fontWeight: 700, textDecoration: "none" }}
+        >
+          Copyright
+        </a>
+        {" • "}
+        <a
           href="https://firststepreadingapp.com/support"
           target="_blank"
           rel="noopener noreferrer"

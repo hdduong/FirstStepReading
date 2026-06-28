@@ -67,12 +67,35 @@ test("footer links to the privacy policy", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("footer links to the copyright notice", async ({ page }) => {
+  const copyrightLink = page.getByRole("link", { name: "Copyright" });
+  await expect(copyrightLink).toHaveAttribute("href", "/copyright");
+
+  await copyrightLink.click();
+
+  await expect(page).toHaveURL(/\/copyright$/);
+  await expect(
+    page.getByRole("heading", { name: "Copyright Notice" }),
+  ).toBeVisible();
+});
+
 test("privacy policy is available at /privacy", async ({ page }) => {
   await page.goto("/privacy");
   await expect(
     page.getByRole("heading", { name: "Privacy Policy" }),
   ).toBeVisible();
   await expect(page.getByText(/no accounts, no ads, no analytics/i)).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Back to FirstStepReading" }),
+  ).toHaveAttribute("href", "/");
+});
+
+test("copyright notice is available at /copyright", async ({ page }) => {
+  await page.goto("/copyright");
+  await expect(
+    page.getByRole("heading", { name: "Copyright Notice" }),
+  ).toBeVisible();
+  await expect(page.getByText(/copyright © 2026 FirstStepReadingApp/i)).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Back to FirstStepReading" }),
   ).toHaveAttribute("href", "/");
