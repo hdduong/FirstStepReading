@@ -4,6 +4,15 @@ name: Upload iOS to TestFlight
 # Requires the Apple Developer account, app record, and GitHub secrets listed in docs/ios-testflight.md.
 on:
   workflow_dispatch:
+    inputs:
+      marketing_version:
+        description: Optional App Store version. Leave blank to use package.json version.
+        required: false
+        type: string
+      build_number:
+        description: Optional iOS build number. Leave blank to use GitHub run number.
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -15,7 +24,6 @@ env:
   IOS_PROJECT: ios/App/App.xcodeproj
   IOS_ARCHIVE_PATH: build/FirstStepReading.xcarchive
   IOS_EXPORT_PATH: build/ios-export
-  IOS_MARKETING_VERSION: 1.0.0
 
 jobs:
   upload-testflight:
@@ -57,6 +65,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Resolve iOS App Store version
+        env:
+          IOS_MARKETING_VERSION_INPUT: ${{ inputs.marketing_version }}
+          IOS_BUILD_NUMBER_INPUT: ${{ inputs.build_number }}
+        run: node scripts/resolve-ios-version.mjs
 
       - run: npm run build
 
@@ -142,7 +156,7 @@ jobs:
             CODE_SIGN_STYLE=Automatic \
             PRODUCT_BUNDLE_IDENTIFIER="$IOS_BUNDLE_ID" \
             MARKETING_VERSION="$IOS_MARKETING_VERSION" \
-            CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+            CURRENT_PROJECT_VERSION="$IOS_BUILD_NUMBER"
 
       - name: Export signed IPA
         env:

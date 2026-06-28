@@ -31,14 +31,21 @@ Run **Upload iOS to TestFlight** from the GitHub Actions tab.
 
 The workflow uses GitHub's `macos-26` runner and selects Xcode 26, because App Store Connect rejects iOS uploads built with older SDKs.
 
+The App Store version is automated from `package.json`:
+
+- `package.json` `version` becomes the iOS marketing version shown in App Store Connect.
+- Each workflow run gets a unique iOS build number from GitHub's run number and run attempt.
+- The manual workflow form also has optional `marketing_version` and `build_number` fields when you need a one-time override.
+
 The workflow:
 
 1. Installs npm dependencies.
-2. Builds the Vite app.
-3. Generates or syncs the Capacitor iOS project.
-4. Installs the FirstStepReading app icon into the generated iOS project.
-5. Signs and archives the iOS app using automatic signing.
-6. Uploads the `.ipa` as a short-lived GitHub artifact.
-7. Uploads the `.ipa` to TestFlight.
+2. Resolves the App Store version and build number.
+3. Builds the Vite app.
+4. Generates or syncs the Capacitor iOS project.
+5. Installs the FirstStepReading app icon into the generated iOS project.
+6. Signs and archives the iOS app using automatic signing.
+7. Uploads the `.ipa` as a short-lived GitHub artifact.
+8. Uploads the `.ipa` to TestFlight.
 
 The workflow is manual only, so merging code to `main` will not upload a new iOS build by itself.
