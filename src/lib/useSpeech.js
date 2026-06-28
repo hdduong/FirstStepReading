@@ -73,6 +73,7 @@ export function useSpeech() {
   const speedRef = useRef(1);
   const audioRef = useRef(null);
   const runRef = useRef(0); // bumped on cancel to abort an in-flight sequence
+  const ttsRef = useRef({ enabled: false }); // server-side Google TTS proxy
 
   const canSpeak = typeof window !== "undefined" && "speechSynthesis" in window;
 
@@ -84,6 +85,23 @@ export function useSpeech() {
         activeVoicePack.id,
       );
   }, [activeVoicePack]);
+
+  // Ask the server once whether the Google TTS proxy is available. When it is,
+  // unclipped words synthesize live via /api/tts; otherwise we never call it
+  // (and fall straight back to the device voice).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let alive = true;
+    fetch("/api/health")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && data) ttsRef.current.enabled = Boolean(data.tts);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!canSpeak) return;
@@ -170,6 +188,30 @@ export function useSpeech() {
     window.speechSynthesis.speak(u);
   };
 
+  // Build the Google TTS proxy URL. A Google voice pack passes its exact voice;
+  // any other pack lets the server pick its default voice.
+  const ttsUrl = (text, pack) => {
+    const params = new URLSearchParams({ text: String(text) });
+    if (pack?.provider === "google" && pack.voiceName)
+      params.set("voice", pack.voiceName);
+    return `/api/tts?${params.toString()}`;
+  };
+
+  // Fallback for a token with no recorded clip: try the Google TTS proxy (when
+  // available), then the device voice. `done` already guards against a stale run.
+  const speakFallback = (text, rate, opts, done) => {
+    if (ttsRef.current.enabled && text) {
+      const a = new Audio(ttsUrl(text, voicePackRef.current));
+      a.playbackRate = Math.max(0.5, Math.min(1.2, speedRef.current));
+      audioRef.current = a;
+      a.onended = done;
+      a.onerror = () => speakText(text, rate, opts, done);
+      a.play().catch(() => speakText(text, rate, opts, done));
+    } else {
+      speakText(text, rate, opts, done);
+    }
+  };
+
   // Speak an array of { say, clip } tokens. `opts.rate` is the base synthesis
   // rate (multiplied by the chosen speed). cbs.onStart(i)/onEnd fire per token
   // and at the end, used for highlighting.
@@ -200,10 +242,10 @@ export function useSpeech() {
         a.playbackRate = clipRate;
         audioRef.current = a;
         a.onended = done;
-        a.onerror = () => speakText(t.say, rate, opts, done);
-        a.play().catch(() => speakText(t.say, rate, opts, done));
+        a.onerror = () => speakFallback(t.say, rate, opts, done);
+        a.play().catch(() => speakFallback(t.say, rate, opts, done));
       } else {
-        speakText(t.say, rate, opts, done);
+        speakFallback(t.say, rate, opts, done);
       }
     };
     // A short delay lets speechSynthesis.cancel() settle on some browsers.
@@ -225,7 +267,7 @@ export function useSpeech() {
       setSpeakingKey((k) => (k === key ? null : k));
       cbs.onEnd && cbs.onEnd();
     };
-    const fallback = () => {
+    const deviceFallback = () => {
       if (run !== runRef.current) return;
       speakPhraseText(phrase, words, rate, opts, cbs, () => {
         if (run === runRef.current) finish();
@@ -233,6 +275,25 @@ export function useSpeech() {
     };
     const highlight = (index) => {
       if (run === runRef.current) cbs.onStart && cbs.onStart(index);
+    };
+    // Google TTS proxy (with progress highlighting) before the device voice.
+    const fallback = () => {
+      if (run !== runRef.current) return;
+      if (!ttsRef.current.enabled || !phrase?.say) return deviceFallback();
+      const a = new Audio(ttsUrl(phrase.say, voicePackRef.current));
+      audioRef.current = a;
+      a.playbackRate = clipRate;
+      a.onplay = () => highlight(0);
+      a.onloadedmetadata = () => highlight(0);
+      a.ontimeupdate = () => {
+        if (!Number.isFinite(a.duration) || a.duration <= 0) return;
+        highlight(progressWordIndex(words, a.currentTime / a.duration));
+      };
+      a.onended = () => {
+        if (run === runRef.current) finish();
+      };
+      a.onerror = deviceFallback;
+      a.play().catch(deviceFallback);
     };
     setTimeout(() => {
       if (run !== runRef.current) return;

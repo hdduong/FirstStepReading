@@ -54,7 +54,51 @@ export const ELEVENLABS_VOICE_PACKS = [
   },
 ];
 
-export const VOICE_PACKS = [...BASE_VOICE_PACKS, ...ELEVENLABS_VOICE_PACKS];
+// Google Cloud Text-to-Speech voices. `voiceName`/`languageCode` are the exact
+// Google voice ids — used both by scripts/generate-google-audio.mjs (to write
+// committed clips under public/audio/google/<short>/) and by the live
+// /api/tts proxy when a word has no committed clip yet. Keep the voiceName list
+// in sync with the allowlist in server/index.js.
+export const GOOGLE_VOICE_PACKS = [
+  {
+    id: "google-clara",
+    label: "Clara - Google Neural2",
+    provider: "google",
+    prefix: "google/clara",
+    voiceName: "en-US-Neural2-F",
+    languageCode: "en-US",
+  },
+  {
+    id: "google-nina",
+    label: "Nina - Google Neural2",
+    provider: "google",
+    prefix: "google/nina",
+    voiceName: "en-US-Neural2-C",
+    languageCode: "en-US",
+  },
+  {
+    id: "google-leo",
+    label: "Leo - Google Neural2",
+    provider: "google",
+    prefix: "google/leo",
+    voiceName: "en-US-Neural2-D",
+    languageCode: "en-US",
+  },
+  {
+    id: "google-ruth",
+    label: "Ruth - Google Studio",
+    provider: "google",
+    prefix: "google/ruth",
+    voiceName: "en-US-Studio-O",
+    languageCode: "en-US",
+  },
+];
+
+export const VOICE_PACKS = [
+  ...BASE_VOICE_PACKS,
+  ...ELEVENLABS_VOICE_PACKS,
+  ...GOOGLE_VOICE_PACKS,
+];
 
 export const voicePackById = (id) =>
   VOICE_PACKS.find((pack) => pack.id === id) ||
