@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+# Local env files holding secrets (ELEVENLABS_API_KEY, GOOGLE_TTS_API_KEY, …)
+.env
 
 # Editor directories and files
 .vscode/*

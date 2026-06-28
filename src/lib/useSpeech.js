@@ -73,6 +73,7 @@ export function useSpeech() {
   const speedRef = useRef(1);
   const audioRef = useRef(null);
   const runRef = useRef(0); // bumped on cancel to abort an in-flight sequence
+  const ttsRef = useRef({ enabled: false }); // server-side Google TTS proxy
 
   const canSpeak = typeof window !== "undefined" && "speechSynthesis" in window;
 
@@ -84,6 +85,23 @@ export function useSpeech() {
         activeVoicePack.id,
       );
   }, [activeVoicePack]);
+
+  // Ask the server once whether the Google TTS proxy is available. When it is,
+  // unclipped words synthesize live via /api/tts; otherwise we never call it
+  // (and fall straight back to the device voice).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let alive = true;
+    fetch("/api/health", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && data) ttsRef.current.enabled = Boolean(data.tts);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!canSpeak) return;
@@ -170,6 +188,37 @@ export function useSpeech() {
     window.speechSynthesis.speak(u);
   };
 
+  // Build the Google TTS proxy URL. A Google voice pack passes its exact voice;
+  // any other pack lets the server pick its default voice.
+  const ttsUrl = (text, pack) => {
+    const params = new URLSearchParams({ text: String(text) });
+    if (pack?.provider === "google" && pack.voiceName)
+      params.set("voice", pack.voiceName);
+    return `/api/tts?${params.toString()}`;
+  };
+
+  // Fallback for a token with no recorded clip: try the Google TTS proxy (when
+  // available), then the device voice. `done` already guards against a stale run.
+  const speakFallback = (text, rate, opts, done) => {
+    if (ttsRef.current.enabled && text) {
+      const a = new Audio(ttsUrl(text, voicePackRef.current));
+      a.playbackRate = Math.max(0.5, Math.min(1.2, speedRef.current));
+      audioRef.current = a;
+      let toldDevice = false;
+      const toDevice = () => {
+        if (toldDevice) return; // error + rejected play() can both fire
+        toldDevice = true;
+        audioRef.current = null; // drop the dead TTS element before the device voice
+        speakText(text, rate, opts, done);
+      };
+      a.onended = done;
+      a.onerror = toDevice;
+      a.play().catch(toDevice);
+    } else {
+      speakText(text, rate, opts, done);
+    }
+  };
+
   // Speak an array of { say, clip } tokens. `opts.rate` is the base synthesis
   // rate (multiplied by the chosen speed). cbs.onStart(i)/onEnd fire per token
   // and at the end, used for highlighting.
@@ -180,7 +229,10 @@ export function useSpeech() {
     const rate = Math.max(0.1, (opts.rate ?? 0.8) * speedRef.current);
     const clipRate = Math.max(0.5, Math.min(1.2, speedRef.current));
     let i = 0;
+    let finished = false;
     const finish = () => {
+      if (finished) return;
+      finished = true;
       setSpeakingKey((k) => (k === key ? null : k));
       cbs.onEnd && cbs.onEnd();
     };
@@ -189,8 +241,10 @@ export function useSpeech() {
       if (i >= tokens.length) return finish();
       const t = tokens[i];
       cbs.onStart && cbs.onStart(i);
+      let advanced = false;
       const done = () => {
-        if (run !== runRef.current) return;
+        if (advanced || run !== runRef.current) return; // idempotent per token
+        advanced = true;
         i++;
         next();
       };
@@ -199,11 +253,17 @@ export function useSpeech() {
         const a = new Audio(clipUrl(resolvedClip));
         a.playbackRate = clipRate;
         audioRef.current = a;
+        let failed = false;
+        const onFail = () => {
+          if (failed) return; // error + rejected play() can both fire
+          failed = true;
+          speakFallback(t.say, rate, opts, done);
+        };
         a.onended = done;
-        a.onerror = () => speakText(t.say, rate, opts, done);
-        a.play().catch(() => speakText(t.say, rate, opts, done));
+        a.onerror = onFail;
+        a.play().catch(onFail);
       } else {
-        speakText(t.say, rate, opts, done);
+        speakFallback(t.say, rate, opts, done);
       }
     };
     // A short delay lets speechSynthesis.cancel() settle on some browsers.
@@ -225,14 +285,43 @@ export function useSpeech() {
       setSpeakingKey((k) => (k === key ? null : k));
       cbs.onEnd && cbs.onEnd();
     };
-    const fallback = () => {
+    const deviceFallback = () => {
       if (run !== runRef.current) return;
       speakPhraseText(phrase, words, rate, opts, cbs, () => {
         if (run === runRef.current) finish();
       });
     };
+    let lastHighlight = -1;
     const highlight = (index) => {
+      if (index === lastHighlight) return; // skip redundant onStart from ontimeupdate
+      lastHighlight = index;
       if (run === runRef.current) cbs.onStart && cbs.onStart(index);
+    };
+    // Google TTS proxy (with progress highlighting) before the device voice.
+    const fallback = () => {
+      if (run !== runRef.current) return;
+      if (!ttsRef.current.enabled || !phrase?.say) return deviceFallback();
+      const a = new Audio(ttsUrl(phrase.say, voicePackRef.current));
+      audioRef.current = a;
+      a.playbackRate = clipRate;
+      a.onplay = () => highlight(0);
+      a.onloadedmetadata = () => highlight(0);
+      a.ontimeupdate = () => {
+        if (!Number.isFinite(a.duration) || a.duration <= 0) return;
+        highlight(progressWordIndex(words, a.currentTime / a.duration));
+      };
+      let fellBack = false;
+      const toDevice = () => {
+        if (fellBack) return; // error + rejected play() can both fire
+        fellBack = true;
+        audioRef.current = null; // drop the dead TTS element before the device voice
+        deviceFallback();
+      };
+      a.onended = () => {
+        if (run === runRef.current) finish();
+      };
+      a.onerror = toDevice;
+      a.play().catch(toDevice);
     };
     setTimeout(() => {
       if (run !== runRef.current) return;
