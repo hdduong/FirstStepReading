@@ -75,6 +75,35 @@ test("read pages show book page pictures", async ({ page }) => {
   );
 });
 
+test("read page pictures and cards pop out into a full read card", async ({ page }) => {
+  await page.getByRole("button", { name: "Read It" }).click();
+  const readCard = page.getByTestId("read-card-page-2");
+
+  await readCard.getByText("Page 2").click();
+
+  const dialog = page.getByRole("dialog", { name: "Read page 2" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByTestId("read-card-popout-page-2")).toBeVisible();
+  await expect(dialog.getByRole("img", { name: "Book page 2 picture" }))
+    .toHaveAttribute("src", "/images/book1/pages/page-003.webp");
+  await expect(dialog.getByText("Page 2")).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Mat" })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Read it to me" })).toBeVisible();
+
+  await dialog.getByRole("button", { name: "Close" }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole("button", { name: "Open book page 2 picture" }).click();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Close" }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole("button", { name: "Open book page 3 picture" }).click();
+  await expect(page.getByRole("dialog", { name: "Read page 3" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Read page 3" })).toBeHidden();
+});
+
 test("book dropdown can select a coming-soon book", async ({ page }) => {
   await page.getByLabel("Choose your book").selectOption("1");
   await expect(page.getByText("Book 2 is coming soon!")).toBeVisible();

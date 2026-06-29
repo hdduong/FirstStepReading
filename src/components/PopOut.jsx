@@ -4,7 +4,13 @@ import { C, cardStyle } from "../theme.js";
 // Full-screen pop-out used by the Words and Sight tabs: a big, focus-holding
 // view of a single word. Closes on a backdrop tap, the ✕ button, or Escape.
 // Callers supply the inner content (picture/word and action buttons).
-export default function PopOut({ label, onClose, children }) {
+export default function PopOut({
+  label,
+  onClose,
+  children,
+  maxWidth = 420,
+  padding = "34px 24px 26px",
+}) {
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -35,8 +41,8 @@ export default function PopOut({ label, onClose, children }) {
           ...cardStyle,
           position: "relative",
           width: "100%",
-          maxWidth: 420,
-          padding: "34px 24px 26px",
+          maxWidth,
+          padding,
         }}
       >
         <button
