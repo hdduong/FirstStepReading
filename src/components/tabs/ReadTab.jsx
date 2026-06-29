@@ -2,7 +2,7 @@ import { useState } from "react";
 import { C, cardStyle, h2Style } from "../../theme.js";
 import Pill from "../Pill.jsx";
 import FamilyWord from "../FamilyWord.jsx";
-import PicFor from "../PicFor.jsx";
+import BookPagePicture from "../BookPagePicture.jsx";
 import VideoClipButton from "../VideoClipButton.jsx";
 import { sentenceToken, wordToken } from "../../lib/phonics.js";
 
@@ -48,7 +48,7 @@ export default function ReadTab({ book, lesson, speech }) {
             padding: 16,
           }}
         >
-          <PicFor pic={s.pic} size={84} />
+          <BookPagePicture bookId={book.id} page={s.page} fallbackPic={s.pic} />
           <div style={{ flex: 1, textAlign: "left" }}>
             <div
               style={{

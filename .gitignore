@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+tmp/
 *.local
 # Local env files holding secrets (ELEVENLABS_API_KEY, GOOGLE_TTS_API_KEY, …)
 .env

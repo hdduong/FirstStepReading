@@ -1,7 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.route("**/api/health", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ status: "ok", tts: false }),
+    }),
+  );
+  await page.goto("/", { waitUntil: "domcontentloaded" });
 });
 
 test("loads Book 1 and shows the -at words", async ({ page }) => {
@@ -42,6 +48,17 @@ test("switches between the four tabs", async ({ page }) => {
   await expect(page.getByText(/tap any word/i)).toBeVisible();
   await page.getByRole("button", { name: "Game" }).click();
   await expect(page.getByText(/Listen and find/i)).toBeVisible();
+});
+
+test("read pages show book page pictures", async ({ page }) => {
+  await page.getByRole("button", { name: "Read It" }).click();
+
+  const pagePicture = page.getByRole("img", { name: "Book page 2 picture" });
+  await expect(pagePicture).toBeVisible();
+  await expect(pagePicture).toHaveAttribute(
+    "src",
+    "/images/book1/pages/page-002.webp",
+  );
 });
 
 test("book dropdown can select a coming-soon book", async ({ page }) => {
