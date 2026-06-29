@@ -23,6 +23,7 @@ export default function LegalPageLayout({
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+        a { color: ${C.blue}; font-weight: 600; }
         a:focus-visible { outline: 3px solid ${C.blue}; outline-offset: 3px; }
       `}</style>
 
@@ -71,16 +72,18 @@ export default function LegalPageLayout({
           >
             {title}
           </h1>
-          <p
-            style={{
-              color: C.gray,
-              fontSize: 16,
-              fontWeight: 600,
-              margin: "12px 0 0",
-            }}
-          >
-            Last updated: {lastUpdated}
-          </p>
+          {lastUpdated && (
+            <p
+              style={{
+                color: C.gray,
+                fontSize: 16,
+                fontWeight: 600,
+                margin: "12px 0 0",
+              }}
+            >
+              Last updated: {lastUpdated}
+            </p>
+          )}
         </header>
 
         <p
@@ -107,9 +110,9 @@ export default function LegalPageLayout({
               >
                 {section.title}
               </h2>
-              {section.body.map((paragraph) => (
+              {section.body.map((paragraph, i) => (
                 <p
-                  key={paragraph}
+                  key={i}
                   style={{
                     color: C.gray,
                     fontSize: 16,

@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import CopyrightPage from './CopyrightPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
+import SupportPage from './SupportPage.jsx'
 
 const path = window.location.pathname.replace(/\/+$/, '')
 const page = {
@@ -14,6 +15,10 @@ const page = {
   '/privacy': {
     title: 'Privacy Policy | FirstStepReading',
     element: <PrivacyPage />,
+  },
+  '/support': {
+    title: 'Support | FirstStepReading',
+    element: <SupportPage />,
   },
 }[path]
 
