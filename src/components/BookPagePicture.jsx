@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { C } from "../theme.js";
+import { bookPageImageSrc } from "../lib/bookPageImages.js";
 import PicFor from "./PicFor.jsx";
-
-const BOOK_PAGE_IMAGE_ROOTS = {
-  book1: "/images/book1/pages",
-};
-
-function bookPageImageSrc(bookId, page) {
-  const root = BOOK_PAGE_IMAGE_ROOTS[bookId];
-  if (!root || !Number.isInteger(page)) return null;
-  return `${root}/page-${String(page).padStart(3, "0")}.webp`;
-}
 
 export default function BookPagePicture({ bookId, page, fallbackPic }) {
   const [failedSrc, setFailedSrc] = useState(null);

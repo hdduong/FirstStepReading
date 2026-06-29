@@ -53,11 +53,25 @@ test("switches between the four tabs", async ({ page }) => {
 test("read pages show book page pictures", async ({ page }) => {
   await page.getByRole("button", { name: "Read It" }).click();
 
-  const pagePicture = page.getByRole("img", { name: "Book page 2 picture" });
-  await expect(pagePicture).toBeVisible();
-  await expect(pagePicture).toHaveAttribute(
+  await expect(page.getByRole("img", { name: "Book page 2 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-002.webp",
+    "/images/book1/pages/page-003.webp",
+  );
+  await expect(page.getByRole("img", { name: "Book page 3 picture" })).toHaveAttribute(
+    "src",
+    "/images/book1/pages/page-004.webp",
+  );
+  await expect(page.getByRole("img", { name: "Book page 4 picture" })).toHaveAttribute(
+    "src",
+    "/images/book1/pages/page-005.webp",
+  );
+  await expect(page.getByRole("img", { name: "Book page 5 picture" })).toHaveAttribute(
+    "src",
+    "/images/book1/pages/page-006.webp",
+  );
+  await expect(page.getByRole("img", { name: "Book page 6 picture" })).toHaveAttribute(
+    "src",
+    "/images/book1/pages/page-007.webp",
   );
 });
 
