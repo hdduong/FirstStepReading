@@ -55,23 +55,23 @@ test("read pages show book page pictures", async ({ page }) => {
 
   await expect(page.getByRole("img", { name: "Book page 2 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-003.webp",
+    "/images/book1/original-pages/page-002.webp",
   );
   await expect(page.getByRole("img", { name: "Book page 3 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-004.webp",
+    "/images/book1/original-pages/page-003.webp",
   );
   await expect(page.getByRole("img", { name: "Book page 4 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-005.webp",
+    "/images/book1/original-pages/page-004.webp",
   );
   await expect(page.getByRole("img", { name: "Book page 5 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-006.webp",
+    "/images/book1/original-pages/page-005.webp",
   );
   await expect(page.getByRole("img", { name: "Book page 6 picture" })).toHaveAttribute(
     "src",
-    "/images/book1/pages/page-007.webp",
+    "/images/book1/original-pages/page-006.webp",
   );
 });
 
@@ -85,7 +85,7 @@ test("read page pictures and cards pop out into a full read card", async ({ page
   await expect(dialog).toBeVisible();
   await expect(dialog.getByTestId("read-card-popout-page-2")).toBeVisible();
   await expect(dialog.getByRole("img", { name: "Book page 2 picture" }))
-    .toHaveAttribute("src", "/images/book1/pages/page-003.webp");
+    .toHaveAttribute("src", "/images/book1/original-pages/page-002.webp");
   await expect(dialog.getByText("Page 2")).toBeVisible();
   await expect(dialog.getByRole("button", { name: "Mat" })).toBeVisible();
   await expect(dialog.getByRole("button", { name: "Read it to me" })).toBeVisible();

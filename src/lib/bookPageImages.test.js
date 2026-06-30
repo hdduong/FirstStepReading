@@ -11,25 +11,25 @@ function imagePathFromSrc(src) {
 }
 
 describe("bookPageImageSrc", () => {
-  it("maps Book 1 sentence pages to the next PDF artwork page", () => {
+  it("maps Book 1 sentence pages to original no-text artwork", () => {
     expect(bookPageImageSrc("book1", 2)).toBe(
-      "/images/book1/pages/page-003.webp",
+      "/images/book1/original-pages/page-002.webp",
     );
     expect(bookPageImageSrc("book1", 3)).toBe(
-      "/images/book1/pages/page-004.webp",
+      "/images/book1/original-pages/page-003.webp",
     );
     expect(bookPageImageSrc("book1", 4)).toBe(
-      "/images/book1/pages/page-005.webp",
+      "/images/book1/original-pages/page-004.webp",
     );
     expect(bookPageImageSrc("book1", 5)).toBe(
-      "/images/book1/pages/page-006.webp",
+      "/images/book1/original-pages/page-005.webp",
     );
     expect(bookPageImageSrc("book1", 6)).toBe(
-      "/images/book1/pages/page-007.webp",
+      "/images/book1/original-pages/page-006.webp",
     );
   });
 
-  it("has artwork for every Book 1 read sentence except the final end card", () => {
+  it("has original artwork for every Book 1 read sentence", () => {
     const missing = [];
     const duplicateImages = [];
     const seen = new Set();
@@ -38,13 +38,8 @@ describe("bookPageImageSrc", () => {
       for (const sentence of lesson.sentences) {
         const src = bookPageImageSrc(book1.id, sentence.page);
 
-        if (sentence.page === 92) {
-          expect(src).toBeNull();
-          continue;
-        }
-
-        const expectedSrc = `/images/book1/pages/page-${String(
-          sentence.page + 1,
+        const expectedSrc = `/images/book1/original-pages/page-${String(
+          sentence.page,
         ).padStart(3, "0")}.webp`;
 
         expect(src).toBe(expectedSrc);

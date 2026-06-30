@@ -1,9 +1,9 @@
 const BOOK_PAGE_IMAGE_ROOTS = {
-  book1: "/images/book1/pages",
+  book1: "/images/book1/original-pages",
 };
 
 const BOOK_PAGE_IMAGE_OFFSETS = {
-  book1: 1,
+  book1: 0,
 };
 
 const BOOK_PAGE_IMAGE_LAST_PAGE = {
